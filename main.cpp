@@ -3,9 +3,17 @@
 #endif
 
 #include <windows.h>
+#include <new>
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 void OnSize(HWND hwnd, UINT flag, int width, int height);
+
+struct StateInfo
+{
+    int var1;
+};
+
+inline StateInfo *GetAppState(HWND hwnd);
 
 /*
 hInstance is the handle to an instance or handle to a module. The operating system uses this value to identify the executable or EXE when it's loaded in memory. Certain Windows functions need the instance handle, for example to load icons or bitmaps.
@@ -26,6 +34,15 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 
     RegisterClass(&wc);
 
+    StateInfo *pState = new (std::nothrow) StateInfo;
+
+    if (pState == NULL)
+    {
+        return 0;
+    }
+
+    pState->var1 = 111;
+
     // Create the window.
 
     HWND hwnd = CreateWindowEx(
@@ -40,7 +57,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
         NULL,      // Parent window
         NULL,      // Menu
         hInstance, // Instance handle
-        NULL       // Additional application data
+        pState     // Additional application data
     );
 
     if (hwnd == NULL)
@@ -64,6 +81,18 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
+    StateInfo *pState;
+    if (uMsg == WM_CREATE)
+    {
+        CREATESTRUCT *pCreate = reinterpret_cast<CREATESTRUCT *>(lParam);
+        pState = reinterpret_cast<StateInfo *>(pCreate->lpCreateParams);
+        SetWindowLongPtr(hwnd, GWLP_USERDATA, (LONG_PTR)pState);
+    }
+    else
+    {
+        pState = GetAppState(hwnd);
+    }
+
     switch (uMsg)
     {
     case WM_DESTROY:
@@ -108,4 +137,11 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 void OnSize(HWND hwnd, UINT flag, int width, int height)
 {
     // Handle resizing
+}
+
+inline StateInfo *GetAppState(HWND hwnd)
+{
+    LONG_PTR ptr = GetWindowLongPtr(hwnd, GWLP_USERDATA);
+    StateInfo *pState = reinterpret_cast<StateInfo *>(ptr);
+    return pState;
 }
