@@ -5,6 +5,7 @@
 #include <windows.h>
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+void OnSize(HWND hwnd, UINT flag, int width, int height);
 
 /*
 hInstance is the handle to an instance or handle to a module. The operating system uses this value to identify the executable or EXE when it's loaded in memory. Certain Windows functions need the instance handle, for example to load icons or bitmaps.
@@ -82,6 +83,21 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         EndPaint(hwnd, &ps);
     }
         return 0;
+
+    case WM_SIZE:
+    {
+        int width = LOWORD(lParam);  // Macro to get the low-order word.
+        int height = HIWORD(lParam); // Macro to get the high-order word.
+
+        // Respond to the message.
+        OnSize(hwnd, (UINT)wParam, width, height);
+    }
+        return 0;
     }
     return DefWindowProc(hwnd, uMsg, wParam, lParam);
+}
+
+void OnSize(HWND hwnd, UINT flag, int width, int height)
+{
+    // Handle resizing
 }
