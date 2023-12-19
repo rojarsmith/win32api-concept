@@ -93,6 +93,14 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         OnSize(hwnd, (UINT)wParam, width, height);
     }
         return 0;
+
+    case WM_CLOSE:
+        if (MessageBox(hwnd, L"Really quit?", L"My application", MB_OKCANCEL) == IDOK)
+        {
+            DestroyWindow(hwnd);
+        }
+        // Else: User canceled. Do nothing.
+        return 0;
     }
     return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
