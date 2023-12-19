@@ -1,5 +1,10 @@
-#include <iostream>
+#ifndef UNICODE
+#define UNICODE
+#endif
 
-int main(int, char**){
-    std::cout << "Hello, from win32api-concept!\n";
+#include <windows.h>
+
+int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
+{
+    return 0;
 }
