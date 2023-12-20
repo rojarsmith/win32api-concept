@@ -18,6 +18,9 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
         hr = CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_ALL,
                               IID_IFileOpenDialog, reinterpret_cast<void **>(&pFileOpen));
 
+        IID ifod = __uuidof(IFileOpenDialog);
+        IID cfod = __uuidof(FileOpenDialog);
+
         if (SUCCEEDED(hr))
         {
             // Show the Open dialog box.
