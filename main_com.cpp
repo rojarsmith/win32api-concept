@@ -41,6 +41,16 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
                     pItem->Release();
                 }
             }
+
+            IFileDialogCustomize *pCustom;
+
+            hr = pFileOpen->QueryInterface(IID_IFileDialogCustomize,
+                                           reinterpret_cast<void **>(&pCustom));
+            if (SUCCEEDED(hr))
+            {
+                pCustom->Release();
+            }
+
             pFileOpen->Release();
         }
     }
