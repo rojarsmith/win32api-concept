@@ -4,9 +4,15 @@ project(win32api-concept VERSION 0.1.0 LANGUAGES C CXX)
 include(CTest)
 enable_testing()
 
-add_executable(win32api-concept main_com.cpp)
-# add_executable(win32api-concept BaseWindow.hpp MainWindow.hpp main_oop.cpp)
-# add_executable(win32api-concept main.cpp)
+option(USE_FUNCTION "Use Function" DEFAULT)
+
+if (USE_FUNCTION STREQUAL "com")
+    add_executable(win32api-concept main_com.cpp)
+elseif (USE_FUNCTION STREQUAL "oo")
+    add_executable(win32api-concept BaseWindow.hpp MainWindow.hpp main_oop.cpp)
+else()
+    add_executable(win32api-concept main.cpp)
+endif()
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
