@@ -6,7 +6,9 @@ enable_testing()
 
 option(USE_FUNCTION "Use Function" DEFAULT)
 
-if (USE_FUNCTION STREQUAL "com")
+if (USE_FUNCTION STREQUAL "graphic")
+    add_executable(win32api-concept src/graphic/main.cpp)
+elseif (USE_FUNCTION STREQUAL "com")
     add_executable(win32api-concept main_com.cpp)
 elseif (USE_FUNCTION STREQUAL "oo")
     add_executable(win32api-concept BaseWindow.hpp MainWindow.hpp main_oop.cpp)
