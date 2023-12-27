@@ -10,6 +10,7 @@ using namespace std;
 #include "base_window.hpp"
 #include "dpi_scale.hpp"
 #include "my_ellipse.hpp"
+#include "resource.h"
 
 template <class T>
 void SafeRelease(T **ppT)
@@ -70,10 +71,12 @@ class MainWindow : public BaseWindow<MainWindow>
     void OnPaint();
     void Resize();
     void SetMode(Mode m);
+    void MoveSelection(float x, float y);
     BOOL HitTest(float x, float y);
     void OnLButtonDown(int pixelX, int pixelY, DWORD flags);
     void OnLButtonUp();
     void OnMouseMove(int pixelX, int pixelY, DWORD flags);
+    void OnKeyDown(UINT vkey);
 
 public:
     MainWindow() : pFactory(NULL), pRenderTarget(NULL), pBrush(NULL),
@@ -161,6 +164,16 @@ void MainWindow::Resize()
 
         pRenderTarget->Resize(size);
 
+        InvalidateRect(m_hwnd, NULL, FALSE);
+    }
+}
+
+void MainWindow::MoveSelection(float x, float y)
+{
+    if ((mode == SelectMode) && Selection())
+    {
+        Selection()->ellipse.point.x += x;
+        Selection()->ellipse.point.y += y;
         InvalidateRect(m_hwnd, NULL, FALSE);
     }
 }
@@ -300,6 +313,39 @@ void MainWindow::OnMouseMove(int pixelX, int pixelY, DWORD flags)
     }
 }
 
+void MainWindow::OnKeyDown(UINT vkey)
+{
+    switch (vkey)
+    {
+    case VK_BACK:
+    case VK_DELETE:
+        if ((mode == SelectMode) && Selection())
+        {
+            ellipses.erase(selection);
+            ClearSelection();
+            SetMode(SelectMode);
+            InvalidateRect(m_hwnd, NULL, FALSE);
+        };
+        break;
+
+    case VK_LEFT:
+        MoveSelection(-1, 0);
+        break;
+
+    case VK_RIGHT:
+        MoveSelection(1, 0);
+        break;
+
+    case VK_UP:
+        MoveSelection(0, -1);
+        break;
+
+    case VK_DOWN:
+        MoveSelection(0, 1);
+        break;
+    }
+}
+
 LRESULT MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     switch (uMsg)
@@ -347,6 +393,33 @@ LRESULT MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
             return TRUE;
         }
         break;
+
+    case WM_KEYDOWN:
+        OnKeyDown((UINT)wParam);
+        return 0;
+
+    case WM_COMMAND:
+        switch (LOWORD(wParam))
+        {
+        case ID_DRAW_MODE:
+            SetMode(DrawMode);
+            break;
+
+        case ID_SELECT_MODE:
+            SetMode(SelectMode);
+            break;
+
+        case ID_TOGGLE_MODE:
+            if (mode == DrawMode)
+            {
+                SetMode(SelectMode);
+            }
+            else
+            {
+                SetMode(DrawMode);
+            }
+            break;
+        }
     }
     return DefWindowProc(m_hwnd, uMsg, wParam, lParam);
     ;
